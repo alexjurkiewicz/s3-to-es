@@ -1,0 +1,82 @@
+service: s3-to-es
+
+plugins:
+  # https://github.com/UnitedIncome/serverless-python-requirements
+  - serverless-python-requirements
+
+provider:
+  name: aws
+  region: ${opt:region}
+  runtime: python3.7
+  environment:
+    ES_HOSTNAME: ${file(serverless-variables.yml):es_hostname}
+  memorySize: 512
+  timeout: 900
+  logRetentionInDays: 14
+  versionFunctions: false
+  vpc: ${file(serverless-variables.yml):vpc}
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "s3:GetObject"
+      Resource: "*"
+  tracing:
+    lambda: true
+
+package:
+  include:
+    - "*.py"
+  exclude:
+    - "**"
+
+functions:
+  ingest-alb:
+    handler: handler.handler
+    environment:
+      LOG_TYPE: alb
+  ingest-cloudfront:
+    handler: handler.handler
+    environment:
+      LOG_TYPE: cloudfront
+
+resources:
+  # Allow any S3 bucket in this Account to trigger the Lambdas
+  Resources:
+    AlbHandlerFunctionPolicy:
+      Type: AWS::Lambda::Permission
+      Properties:
+        Action: lambda:InvokeFunction
+        FunctionName:
+          Ref: IngestDashalbLambdaFunction
+        Principal: s3.amazonaws.com
+        SourceAccount:
+          Ref: AWS::AccountId
+    AlbHandlerParameter:
+      Type: AWS::SSM::Parameter
+      Properties:
+        Description: Lambda ARN that accepts S3 object ALB access log creation notifications and uploads the contents to Elasticsearch.
+        Name: /s3-to-es/handlers/alb
+        Type: String
+        Value:
+          Fn::GetAtt:
+            - IngestDashalbLambdaFunction
+            - Arn
+    CloudfrontHandlerFunctionPolicy:
+      Type: AWS::Lambda::Permission
+      Properties:
+        Action: lambda:InvokeFunction
+        FunctionName:
+          Ref: IngestDashcloudfrontLambdaFunction
+        Principal: s3.amazonaws.com
+        SourceAccount:
+          Ref: AWS::AccountId
+    CloudFrontHandlerParameter:
+      Type: AWS::SSM::Parameter
+      Properties:
+        Description: Lambda ARN that accepts S3 object CloudFront access log creation notifications and uploads the contents to Elasticsearch.
+        Name: /s3-to-es/handlers/cloudfront
+        Type: String
+        Value:
+          Fn::GetAtt:
+            - IngestDashcloudfrontLambdaFunction
+            - Arn

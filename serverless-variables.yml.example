@@ -1,0 +1,8 @@
+vpc:
+  securityGroupIds:
+    - sg-123
+  subnetIds:
+    - subnet-123
+    - subnet-456
+    - subnet-789
+es_hostname: vpc-xyz.us-west-2.es.amazonaws.com
