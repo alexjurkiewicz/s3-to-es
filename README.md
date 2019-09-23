@@ -26,7 +26,17 @@ This repository implements the Lambda functions in the above diagram. You have t
 4. Deploy the stack: `npx serverless deploy --region us-west-2`
 5. Add event triggers for your S3 buckets to trigger the correct Lambda function. The function ARNs are available in SSM Parameter Store under the `/s3-to-es/handlers/` prefix.
 
-## Adding support for a new log format
+## Development
+
+General logic is:
+
+1. Get a line iterator of the source file
+2. Convert every line into an ES document (Python dict) with a source-type-specific transform function
+3. Upload the ES documents in batches to the ES cluster
+
+The lambda handler lives in `handler.py` and figures out the log type it supports at startup. The transformation function is from `alb.py`/`cloudfront.py`/etc, and the heavy lifting is performed by all the code in `common.py`.
+
+### Adding support for a new log format
 
 1. Write a Python function that transforms the log file into ES documents one line at a time.
     1. See `cloudfront.py` for an example.
