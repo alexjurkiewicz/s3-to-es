@@ -26,7 +26,7 @@ def transform(
     doc["aws.lb.resource_id"], line = line.split(" ", 1)
 
     # Required by Elasticsearch
-    doc["_index"] = "cloudfront-%s" % doc["@timestamp"]
+    doc["_index"] = "alb-%s" % doc["@timestamp"].split("T")[0]
     doc["_type"] = "doc"  # Remove for ES > 7
 
     client, line = line.split(" ", 1)
