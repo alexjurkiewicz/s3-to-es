@@ -6,8 +6,9 @@ A Serverless Framework application to help ingest the following S3 logs into Ela
 
 * ALB access logs
 * CloudFront access logs
-* ~~CloudTrail logs~~ (not yet implemented)
-* add your own formats!
+* CloudTrail logs
+
+It's easy to add other formats as well.
 
 ```plain
 S3 Bucket ---(object creation notifications)---> Lambda ---(HTTPS POST)---> Elasticsearch Service
