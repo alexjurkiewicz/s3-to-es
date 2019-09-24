@@ -20,7 +20,7 @@ _ES_STREAM_BULK_OPTS = {
 }
 
 EsDocument = Dict[str, Union[str, int, bool, float]]
-TransformFn = Callable[[str, int], Optional[EsDocument]]
+TransformFn = Callable[[str, int], Iterable[EsDocument]]
 T = TypeVar("T")
 
 logger = logging.getLogger()
@@ -48,13 +48,13 @@ def _transform_lines(
     n = 0
     for line in lines:
         try:
-            data = transform_fn(line, n)
+            documents = transform_fn(line, n)
         except Exception:
             logger.exception("Failed to transform line %s (%r)", n, line)
             raise
         n += 1
-        if data is not None:
-            yield data
+        for doc in documents:
+            yield doc
 
 
 def _es_streaming_wrapper(streamer: Iterator[T]) -> Iterator[T]:
@@ -117,7 +117,7 @@ def s3_to_es(
             document. The ES document must include `_index` and (if ES<7)
             `_type` fields. If a line should not be indexed, return None.
             `line_no` is 0-indexed.
-            Function signature: (line: str, line_no: int) -> Optional[EsDocument]
+            Function signature: (line: str, line_no: int) -> Iterable[EsDocument]
         elasticsearch: The ES connection object.
 
     Returns:
