@@ -41,11 +41,15 @@ The lambda handler lives in `handler.py` and figures out the log type it support
 
 ### Adding support for a new log format
 
-1. Write a Python function that transforms the log file into ES documents one line at a time.
-    1. See `cloudfront.py` for an example.
-    2. Fields `_index`, `_type` are required.
-    3. Use the [Elastic Common Schema](https://www.elastic.co/guide/en/ecs/current/ecs-reference.html) to detemine appropriate field names.
-2. Import this function into `handler.py` and add a mapping based on `LOG_TYPE` environment variable.
+1. Write two Python functions:
+    1. See `cloudfront.py` for examples.
+    2. A function that checks the S3 object name and returns True if if should be processed.
+        1. Prevent processing random files, log delivery tests, digests, etc.
+    3. A function that transforms the log file into ES documents one line at a time.
+        1. Fields `_index`, `_type` are required.
+        2. Use the [Elastic Common Schema](https://www.elastic.co/guide/en/ecs/current/ecs-reference.html) to detemine appropriate field names.
+    4. Add tests for the above in `tests/`
+2. Import these functions into `handler.py` and add a mapping based on `LOG_TYPE` environment variable.
 3. Add the following to `serverless.yml`:
     1. New entry under `functions`
     2. New `AWS::Lambda::Permission` resource. Use `AlbHandlerFunctionPolicy` as a template.

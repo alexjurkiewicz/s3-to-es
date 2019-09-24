@@ -42,10 +42,13 @@ es_client = Elasticsearch(
 log_type = os.environ["LOG_TYPE"]
 transform_fn: common.TransformFn
 if log_type == "cloudfront":
+    check_filename_fn = cloudfront.check_filename
     transform_fn = cloudfront.transform
 elif log_type == "alb":
+    check_filename_fn = alb.check_filename
     transform_fn = alb.transform
 elif log_type == "cloudtrail":
+    check_filename_fn = cloudtrail.check_filename
     transform_fn = cloudtrail.transform
 else:
     raise ValueError("Unhandled LOG_TYPE '%s'" % log_type)
@@ -55,11 +58,13 @@ def handler(event: Any, _context: Any) -> None:
     xray_recorder.begin_subsegment("Handler")
     for record in event["Records"]:
         xray_recorder.begin_subsegment("Record")
-        common.s3_to_es(
-            bucket=record["s3"]["bucket"]["name"],
-            key=record["s3"]["object"]["key"],
-            transform_fn=transform_fn,
-            es_client=es_client,
-        )
+        bucket = record["s3"]["bucket"]["name"]
+        key = record["s3"]["object"]["key"]
+        if check_filename_fn(key):
+            common.s3_to_es(
+                bucket=bucket, key=key, transform_fn=transform_fn, es_client=es_client
+            )
+        else:
+            logger.warning("Skipping object %r", key)
         xray_recorder.end_subsegment()
     xray_recorder.end_subsegment()

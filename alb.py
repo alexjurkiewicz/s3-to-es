@@ -1,7 +1,17 @@
 import urllib.parse
+import re
 from typing import Iterable
 
 import common
+
+
+def check_filename(filename: str) -> bool:
+    return bool(
+        re.match(
+            r".*AWSLogs/.*/elasticloadbalancing/.*\d+_elasticloadbalancing_.*.log.gz$",
+            filename,
+        )
+    )
 
 
 def transform(

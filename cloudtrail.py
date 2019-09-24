@@ -26,6 +26,10 @@ def elasticsearch_reducer(k1: str, k2: str) -> str:
         return str(k1) + "." + str(k2)
 
 
+def check_filename(filename: str) -> bool:
+    return bool(re.match(r".*CloudTrail/.*/\d+_CloudTrail_.*.json.gz$", filename))
+
+
 def transform(line: str, _line_no: int) -> Iterable[common.EsDocument]:
     try:
         data = json.loads(line)
