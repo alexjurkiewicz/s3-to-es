@@ -1,5 +1,7 @@
 # S3 to ES
 
+[![Build Status](https://travis-ci.com/alexjurkiewicz/s3-to-es.svg?branch=master)](https://travis-ci.com/alexjurkiewicz/s3-to-es)
+
 A Serverless Framework application to help ingest the following S3 logs into Elasticsearch Service:
 
 * ALB access logs

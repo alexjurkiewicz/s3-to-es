@@ -6,3 +6,4 @@ install:
 script:
   - pipenv run mypy --strict *.py
   - pipenv run pylint --init-hook="import sys; sys.setrecursionlimit(2000)" -d missing-docstring,bad-continuation,line-too-long,invalid-name *.py
+  - pipenv run python -m pytest test/
