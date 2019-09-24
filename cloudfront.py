@@ -1,13 +1,13 @@
-from typing import Optional
+from typing import Iterable
 
 import common
 
 
-def transform(line: str, line_no: int) -> Optional[common.EsDocument]:
+def transform(line: str, line_no: int) -> Iterable[common.EsDocument]:
     if line_no in (0, 1):
-        return None
+        return []
     data = line.strip().split("\t")
-    return {
+    yield {
         # Required by Elasticsearch
         "_index": "cloudfront-%s" % data[0],
         "_type": "doc",  # Remove for ES > 7
