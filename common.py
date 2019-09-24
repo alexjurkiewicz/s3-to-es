@@ -1,6 +1,6 @@
 import gzip
 import traceback
-from typing import Iterable, Callable, Dict, Optional, Iterator, Union, TypeVar
+from typing import Iterable, Callable, Dict, Iterator, Union, TypeVar
 import logging
 
 import boto3  # type: ignore
