@@ -1,12 +1,12 @@
 import urllib.parse
-from typing import Optional
+from typing import Iterable
 
 import common
 
 
 def transform(
     line: str, _line_no: int
-) -> Optional[
+) -> Iterable[
     common.EsDocument
 ]:  # pylint: disable=too-many-locals,too-many-branches,too-many-statements
     """
@@ -19,7 +19,7 @@ def transform(
     """
 
     if line.startswith("Enable AccessLog for ELB: "):
-        return None
+        return []
 
     doc: common.EsDocument = {}
 
@@ -140,4 +140,4 @@ def transform(
     if line:
         doc["aws.lb.unhandled_fields"] = line
 
-    return doc
+    yield doc
