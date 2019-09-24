@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "f900cadb3118a4b8c5aaaa88dd91d44198094b110255a0c00a98e3d741721e51"
+            "sha256": "87f8276356b0a38d9490b5357c3547eb14b7f31815615fff442cc23936535640"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -76,6 +76,14 @@
             "index": "pypi",
             "version": "==7.0.4"
         },
+        "flatten-dict": {
+            "hashes": [
+                "sha256:82944200b8c257d36778691045c53a3cf6925a069a1e8e0890b5e5f6da0e50de",
+                "sha256:f4f4901e93c253842afb400ddc5e0089058d69b5d6eb6fc4e65277ee4cd4e67a"
+            ],
+            "index": "pypi",
+            "version": "==0.1.0"
+        },
         "future": {
             "hashes": [
                 "sha256:67045236dcfd6816dc439556d009594abf643e5eb48992e36beac09c2ca659b8"
@@ -102,6 +110,13 @@
                 "sha256:d3e922d781b1d0096df2dad89a2e1f47177d7969b596aea806a9d91b4626b29b"
             ],
             "version": "==1.2"
+        },
+        "pathlib2": {
+            "hashes": [
+                "sha256:2156525d6576d21c4dcaddfa427fae887ef89a7a9de5cbfe0728b3aafa78427e",
+                "sha256:446014523bb9be5c28128c4d2a10ad6bb60769e78bd85658fe44a450674e0ef8"
+            ],
+            "version": "==2.3.4"
         },
         "python-dateutil": {
             "hashes": [

@@ -38,6 +38,10 @@ functions:
     handler: handler.handler
     environment:
       LOG_TYPE: cloudfront
+  ingest-cloudtrail:
+    handler: handler.handler
+    environment:
+      LOG_TYPE: cloudtrail
 
 resources:
   # Allow any S3 bucket in this Account to trigger the Lambdas
@@ -79,4 +83,23 @@ resources:
         Value:
           Fn::GetAtt:
             - IngestDashcloudfrontLambdaFunction
+            - Arn
+    CloudTrailHandlerFunctionPolicy:
+      Type: AWS::Lambda::Permission
+      Properties:
+        Action: lambda:InvokeFunction
+        FunctionName:
+          Ref: IngestDashcloudtrailLambdaFunction
+        Principal: s3.amazonaws.com
+        SourceAccount:
+          Ref: AWS::AccountId
+    CloudTrailHandlerParameter:
+      Type: AWS::SSM::Parameter
+      Properties:
+        Description: Lambda ARN that accepts S3 object CloudTrail log creation notifications and uploads the contents to Elasticsearch.
+        Name: /s3-to-es/handlers/cloudtrail
+        Type: String
+        Value:
+          Fn::GetAtt:
+            - IngestDashcloudtrailLambdaFunction
             - Arn

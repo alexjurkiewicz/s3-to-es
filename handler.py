@@ -10,6 +10,7 @@ from aws_xray_sdk.core import patch_all
 import common
 import cloudfront
 import alb
+import cloudtrail
 
 # Global setup
 logger = logging.getLogger()
@@ -44,6 +45,8 @@ if log_type == "cloudfront":
     transform_fn = cloudfront.transform
 elif log_type == "alb":
     transform_fn = alb.transform
+elif log_type == "cloudtrail":
+    transform_fn = cloudtrail.transform
 else:
     raise ValueError("Unhandled LOG_TYPE '%s'" % log_type)
 
