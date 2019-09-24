@@ -17,6 +17,10 @@ def transform(
     Attempts to be compatible with Elasticsearch Common Schema (ECS) 1.0, but
     some of the fields aren't explicitly specified in the ECS so we guess.
     """
+
+    if line.startswith("Enable AccessLog for ELB: "):
+        return None
+
     doc: common.EsDocument = {}
 
     doc["ecs.version"] = "1.0.1"
