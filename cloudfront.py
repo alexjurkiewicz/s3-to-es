@@ -30,7 +30,7 @@ def transform(line: str, line_no: int) -> Iterable[common.EsDocument]:
         "aws.cloudfront.request_id": data[14],
         "http.request.host": data[15],
         "http.protocol": data[16],
-        "http.request.total.bytes": int(data[17]),
+        "http.request.total.bytes": int(data[17]) if data[17] != "-" else 0,
         "event.duration": float(data[18]) * 1_000_000,  # nanoseconds
         "http.request.x-forwarded-for": data[19],
         "http.ssl.protocol": data[20],
