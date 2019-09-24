@@ -47,7 +47,11 @@ def _transform_lines(
 ) -> Iterable[EsDocument]:
     n = 0
     for line in lines:
-        data = transform_fn(line, n)
+        try:
+            data = transform_fn(line, n)
+        except Exception:
+            logger.exception("Failed to transform line %s (%r)", n, line)
+            raise
         n += 1
         if data is not None:
             yield data
