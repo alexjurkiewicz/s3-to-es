@@ -36,6 +36,7 @@ def transform(
     client, line = line.split(" ", 1)
     client_ip, client_port = client.split(":")
     doc["client.ip"], doc["client.port"] = client_ip, int(client_port)
+    doc["client.protocol"] = "ipv6" if ":" in client_ip else "ipv4"
 
     server, line = line.split(" ", 1)
     if server != "-":

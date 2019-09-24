@@ -17,6 +17,7 @@ def transform(line: str, line_no: int) -> Optional[common.EsDocument]:
         "aws.cloudfront.edge_location": data[2],
         "http.response.total.bytes": int(data[3]),
         "client.ip": data[4],
+        "client.protocol": "ipv6" if ":" in data[4] else "ipv4",
         "http.request.method": data[5],
         "aws.cloudfront.distribution_id": data[6],
         "url.path": data[7],
