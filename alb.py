@@ -23,15 +23,17 @@ def transform(
 
     doc: common.EsDocument = {}
 
+    # Required by Elasticsearch
+    doc["_type"] = "doc"  # Remove for ES > 7
     doc["ecs.version"] = "1.0.1"
 
     doc["http.type"], line = line.split(" ", 1)
-    doc["@timestamp"], line = line.split(" ", 1)
-    doc["aws.lb.resource_id"], line = line.split(" ", 1)
 
-    # Required by Elasticsearch
-    doc["_index"] = "alb-%s" % doc["@timestamp"].split("T")[0]
-    doc["_type"] = "doc"  # Remove for ES > 7
+    timestamp, line = line.split(" ", 1)
+    doc["@timestamp"] = timestamp
+    doc["_index"] = "alb-%s" % timestamp.split("T")[0]
+
+    doc["aws.lb.resource_id"], line = line.split(" ", 1)
 
     client, line = line.split(" ", 1)
     client_ip, client_port = client.split(":")
