@@ -61,14 +61,13 @@ def _hash_es_doc(doc: EsDocument) -> str:
 def _transform_lines(
     lines: Iterable[str], transform_fn: TransformFn
 ) -> Iterable[EsDocument]:
-    n = 0
-    for line in lines:
+    """Transform log file lines into Elasticsearch Documents, one at a time."""
+    for n, line in enumerate(lines):
         try:
             documents = transform_fn(line, n)
         except Exception:
             logger.exception("Failed to transform line %s (%r)", n, line)
             raise
-        n += 1
         for doc in documents:
             if "_id" not in doc:
                 doc["_id"] = _hash_es_doc(doc)
@@ -124,14 +123,14 @@ def _stream_to_es(
             es, documents_bufferer, **_ES_STREAM_BULK_OPTS
         )
     )
-    count = 0
-    for resp in elastic_stream:
-        count += 1
+    # Each document causes an iteration of this loop, even though docs are sent
+    # in batches.
+    # Resp is a tuple: (success: bool, es_response: dict)
+    for count, resp in enumerate(elastic_stream):
         if count % log_interval == 0:
             logger.debug("Sent %s documents to Elasticsearch", count)
-        if resp[0]:
-            count += 1
-        else:
+
+        if not resp[0]:
             # The error might not reference a document
             doc_id = resp[1].get("index", {}).get("_id")
             if doc_id:
