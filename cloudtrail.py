@@ -64,7 +64,15 @@ def transform(line: str, _line_no: int) -> Iterable[common.EsDocument]:
                 doc[new_key] = value
             else:
                 new_key = convert_cloudtrail_key(key)
-                doc["aws.cloudtrail." + new_key] = value
+                # Always cast the value to string. Some fields come through
+                # as either number or string. For example:
+                # aws.cloudtrail.response_elements.version
+                # can be a number (1) or string ('$LATEST').
+                #
+                # If any fields should be treated as number, we can add a
+                # whitelist based on field name.
+                new_value = str(value)
+                doc["aws.cloudtrail." + new_key] = new_value
 
         doc["_type"] = "doc"  # Can be removed with ES > 7
         doc["_index"] = "cloudtrail-" + record["eventTime"].split("T")[0]
