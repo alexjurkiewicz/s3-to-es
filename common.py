@@ -2,6 +2,9 @@ import gzip
 import traceback
 from typing import Iterable, Callable, Dict, Iterator, Union, TypeVar
 import logging
+import hashlib
+import json
+import base64
 
 import pylru  # type: ignore
 import boto3  # type: ignore
@@ -40,6 +43,21 @@ def _s3_object_lines(bucket: str, key: str) -> Iterable[str]:
     logger.debug("Finished streaming from S3")
 
 
+def _hash_es_doc(doc: EsDocument) -> str:
+    """
+    Generate an _id value for an EsDocument.
+
+    Use a stable representation of the doc so we don't have consistency issues
+    when processing the same document over multiple Lambda invoations.
+    """
+    # We limit the digest size to make sure the ID fits in 512 bytes
+    return base64.b64encode(
+        hashlib.blake2b(
+            json.dumps(doc, sort_keys=True).encode(), digest_size=32
+        ).digest()
+    ).decode()
+
+
 def _transform_lines(
     lines: Iterable[str], transform_fn: TransformFn
 ) -> Iterable[EsDocument]:
@@ -52,6 +70,8 @@ def _transform_lines(
             raise
         n += 1
         for doc in documents:
+            if "_id" not in doc:
+                doc["_id"] = _hash_es_doc(doc)
             yield doc
 
 
