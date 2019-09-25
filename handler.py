@@ -17,22 +17,6 @@ logger.setLevel(logging.INFO)
 # Sign the request
 es_host = os.environ["ES_HOSTNAME"]
 region = es_host.split(".")[1]
-# As per https://github.com/DavidMuller/aws-requests-auth#elasticsearch-py-client-usage-example
-auth = AWSRequestsAuth(
-    aws_access_key=os.environ["AWS_ACCESS_KEY_ID"],
-    aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"],
-    aws_token=os.environ["AWS_SESSION_TOKEN"],
-    aws_host=es_host,
-    aws_region=region,
-    aws_service="es",
-)
-es_client = Elasticsearch(
-    host=es_host,
-    port=443,
-    use_ssl=True,
-    connection_class=RequestsHttpConnection,
-    http_auth=auth,
-)
 
 log_type = os.environ["LOG_TYPE"]
 transform_fn: common.TransformFn
@@ -50,6 +34,22 @@ else:
 
 
 def handler(event: Any, _context: Any) -> None:
+    # As per https://github.com/DavidMuller/aws-requests-auth#elasticsearch-py-client-usage-example
+    auth = AWSRequestsAuth(
+        aws_access_key=os.environ["AWS_ACCESS_KEY_ID"],
+        aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"],
+        aws_token=os.environ["AWS_SESSION_TOKEN"],
+        aws_host=es_host,
+        aws_region=region,
+        aws_service="es",
+    )
+    es_client = Elasticsearch(
+        host=es_host,
+        port=443,
+        use_ssl=True,
+        connection_class=RequestsHttpConnection,
+        http_auth=auth,
+    )
     for record in event["Records"]:
         bucket = record["s3"]["bucket"]["name"]
         key = record["s3"]["object"]["key"]
