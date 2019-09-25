@@ -15,8 +15,6 @@ PREDEFINED_MAPPINGS = {
     "eventType": "event.dataset",
 }
 
-DOC_NAME_REGEX = re.compile("[a-zA-Z][^A-Z]*")
-
 
 def elasticsearch_reducer(k1: str, k2: str) -> str:
     """Combine items with '.' as per Elastic Common Schema convention."""
@@ -24,6 +22,21 @@ def elasticsearch_reducer(k1: str, k2: str) -> str:
         return str(k2)
     else:
         return str(k1) + "." + str(k2)
+
+
+REGEX_ONE = re.compile("(.)([A-Z][a-z]+)")
+REGEX_TWO = re.compile("([a-z0-9])([A-Z])")
+
+
+def convert_cloudtrail_key(key):
+    """
+    Convert eg 'accessKeyId' -> 'access_key_id'.
+
+    This is more complex than it looks because we have to watch out for acronyms
+    in things like `sourceIPAddress` or `ARN`.
+    """
+    s1 = re.sub(REGEX_ONE, r"\1_\2", key)
+    return re.sub(REGEX_TWO, r"\1_\2", s1).lower()
 
 
 def check_filename(filename: str) -> bool:
@@ -47,9 +60,7 @@ def transform(line: str, _line_no: int) -> Iterable[common.EsDocument]:
                 new_key = PREDEFINED_MAPPINGS[key]
                 doc[new_key] = value
             else:
-                # Convert eg 'accessKeyId' -> 'access_key_id'
-                new_key = "_".join(i.lower() for i in re.findall(DOC_NAME_REGEX, key))
-                new_key = new_key.replace("i_d", "id")  # little fixup hack
+                new_key = convert_cloudtrail_key(key)
                 doc["aws.cloudtrail." + new_key] = value
 
         doc["_type"] = "doc"  # Can be removed with ES > 7
