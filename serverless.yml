@@ -101,3 +101,8 @@ resources:
           Fn::GetAtt:
             - IngestDashcloudtrailLambdaFunction
             - Arn
+
+custom:
+  pythonRequirements:
+    useDownloadCache: true
+    useStaticCache: true
