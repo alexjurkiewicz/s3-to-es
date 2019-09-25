@@ -6,7 +6,7 @@ import common
 
 def check_filename(filename: str) -> bool:
     return bool(
-        re.match(r".*[A-Z0-9]+\.\d{4}-\d{2}-\d{2}-\d{2}\.[0-9a-f]\.gz$", filename)
+        re.match(r".*[A-Z0-9]+\.\d{4}-\d{2}-\d{2}-\d{2}\.[0-9a-f]+\.gz$", filename)
     )
 
 
