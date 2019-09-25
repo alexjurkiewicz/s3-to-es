@@ -13,7 +13,6 @@ pytest = "*"
 requests = "*"
 elasticsearch = "*"
 aws-requests-auth = "*"
-aws-xray-sdk = "*"
 boto3 = "*"
 flatten-dict = "*"
 

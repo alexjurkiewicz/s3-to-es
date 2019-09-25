@@ -7,7 +7,6 @@ import boto3  # type: ignore
 import elasticsearch  # type: ignore
 import elasticsearch.helpers  # type: ignore
 import urllib3.exceptions  # type: ignore
-from aws_xray_sdk.core import xray_recorder  # type: ignore
 
 _ES_STREAM_BULK_OPTS = {
     "max_chunk_bytes": 90 * 1024 * 1024,  # 90mbyte
@@ -26,7 +25,6 @@ T = TypeVar("T")
 logger = logging.getLogger()
 
 
-@xray_recorder.capture("_s3_object_lines")  # type: ignore
 def _s3_object_lines(bucket: str, key: str) -> Iterable[str]:
     """Return lines from an S3 object in a streaming manner."""
     obj = boto3.resource("s3").Object(bucket_name=bucket, key=key)
@@ -41,7 +39,6 @@ def _s3_object_lines(bucket: str, key: str) -> Iterable[str]:
     logger.debug("Finished streaming from S3")
 
 
-@xray_recorder.capture("_transform_lines")  # type: ignore
 def _transform_lines(
     lines: Iterable[str], transform_fn: TransformFn
 ) -> Iterable[EsDocument]:
@@ -80,7 +77,6 @@ def _es_streaming_wrapper(streamer: Iterator[T]) -> Iterator[T]:
             traceback.print_exc()
 
 
-@xray_recorder.capture("_stream_to_es")  # type: ignore
 def _stream_to_es(
     es: elasticsearch.Elasticsearch,
     documents: Iterable[EsDocument],

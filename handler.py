@@ -4,8 +4,6 @@ from typing import Any
 
 from aws_requests_auth.aws_auth import AWSRequestsAuth  # type: ignore
 from elasticsearch import Elasticsearch, RequestsHttpConnection  # type: ignore
-from aws_xray_sdk.core import xray_recorder  # type: ignore
-from aws_xray_sdk.core import patch_all
 
 import common
 import cloudfront
@@ -15,9 +13,6 @@ import cloudtrail
 # Global setup
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
-xray_recorder.configure(sampling=False)
-patch_all()
-logging.getLogger("aws_xray_sdk").setLevel(logging.INFO)
 
 # Sign the request
 es_host = os.environ["ES_HOSTNAME"]
@@ -55,9 +50,7 @@ else:
 
 
 def handler(event: Any, _context: Any) -> None:
-    xray_recorder.begin_subsegment("Handler")
     for record in event["Records"]:
-        xray_recorder.begin_subsegment("Record")
         bucket = record["s3"]["bucket"]["name"]
         key = record["s3"]["object"]["key"]
         if check_filename_fn(key):
@@ -66,5 +59,3 @@ def handler(event: Any, _context: Any) -> None:
             )
         else:
             logger.warning("Skipping object %r", key)
-        xray_recorder.end_subsegment()
-    xray_recorder.end_subsegment()
