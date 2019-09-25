@@ -24,7 +24,7 @@ _ES_STREAM_BULK_OPTS = {
 
 EsDocument = Dict[str, Union[str, int, bool, float]]
 TransformFn = Callable[[str, int], Iterable[EsDocument]]
-T = TypeVar("T")
+T = TypeVar("T")  # generic type
 
 logger = logging.getLogger()
 
@@ -110,7 +110,7 @@ def buffering_iterator(
 def _stream_to_es(
     es: elasticsearch.Elasticsearch,
     documents: Iterable[EsDocument],
-    log_interval: int = 10_000,
+    log_interval: int = 1_000,
 ) -> None:
     # We buffer items as they are sent through to ES so that we can show them
     # in case ES returns an error. This requires the _id to be pre-set.
