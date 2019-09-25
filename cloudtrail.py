@@ -13,6 +13,9 @@ PREDEFINED_MAPPINGS = {
     "eventSource": "event.module",
     "eventTime": "@timestamp",
     "eventType": "event.dataset",
+    # These fields can be either a string or an array of strings, which confuses
+    # ES. Convert the string form to an array of one string
+    "request_parameters.policy": "aws.cloudtrail.request_parameters.policy.0",
 }
 
 
