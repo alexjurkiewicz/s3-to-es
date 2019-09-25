@@ -14,7 +14,7 @@ import urllib3.exceptions  # type: ignore
 
 _ES_STREAM_BULK_OPTS = {
     "max_chunk_bytes": 90 * 1024 * 1024,  # 90mbyte
-    "chunk_size": 1_000,
+    "chunk_size": 10_000,
     "max_retries": 3,
     "initial_backoff": 1,
     "max_backoff": 10,
