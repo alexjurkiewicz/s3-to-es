@@ -18,6 +18,7 @@ PREDEFINED_MAPPINGS = {
     # ES. Convert the string form to an array of one string
     "request_parameters.policy": "aws.cloudtrail.request_parameters.policy.0",
 }
+STRING_FIELDS = set(["aws.cloudtrail.response_elements.version"])
 
 
 def elasticsearch_reducer(k1: str, k2: str) -> str:
@@ -61,20 +62,18 @@ def transform(line: str, _line_no: int) -> Iterable[common.EsDocument]:
             record, reducer=elasticsearch_reducer, enumerate_types=(list,)
         )
         for key, value in record.items():
+            if value is None:
+                continue
             if key in PREDEFINED_MAPPINGS:
                 new_key = PREDEFINED_MAPPINGS[key]
                 doc[new_key] = value
             else:
-                new_key = convert_cloudtrail_key(key)
-                # Always cast the value to string. Some fields come through
-                # as either number or string. For example:
-                # aws.cloudtrail.response_elements.version
-                # can be a number (1) or string ('$LATEST').
-                #
-                # If any fields should be treated as number, we can add a
-                # whitelist based on field name.
-                new_value = str(value)
-                doc["aws.cloudtrail." + new_key] = new_value
+                new_key = "aws.cloudtrail." + convert_cloudtrail_key(key)
+                # Some fields come through with differing types, we need to
+                # explicitly list these and convert them as apropriate.
+                if new_key in STRING_FIELDS:
+                    value = str(value)
+                doc[new_key] = value
 
         doc["_type"] = "doc"  # Can be removed with ES > 7
         doc["_index"] = "cloudtrail-" + record["eventTime"].split("T")[0]
