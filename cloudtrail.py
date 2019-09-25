@@ -31,7 +31,7 @@ REGEX_ONE = re.compile("(.)([A-Z][a-z]+)")
 REGEX_TWO = re.compile("([a-z0-9])([A-Z])")
 
 
-def convert_cloudtrail_key(key):
+def convert_cloudtrail_key(key: str) -> str:
     """
     Convert eg 'accessKeyId' -> 'access_key_id'.
 
