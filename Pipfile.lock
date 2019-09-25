@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "4b19e1a965a43312d8e118739bbdb29afcd2d3828f1e5fa609abe7238817ab1f"
+            "sha256": "28a17157603c488c6aec71044650e139115a8ad65f1d451b1431268e730a72c7"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -25,18 +25,18 @@
         },
         "boto3": {
             "hashes": [
-                "sha256:273d3cb6d0206d40b2020e1871e1d95b284cff870fdf1e8816701da1063474c4",
-                "sha256:6f9c9f393d4951b9e86d4b26ff5cf1d5b9845bd1c3eb9a2f6b969887c2e4155e"
+                "sha256:8fed2b76e4234e109ad566c90c010e20525d2d4cff779d1f0930f6b8ef377a35",
+                "sha256:a22e14cf17e8022fed803872e8f536dee15c213b43a73941fac66c939dd6663d"
             ],
             "index": "pypi",
-            "version": "==1.9.234"
+            "version": "==1.9.235"
         },
         "botocore": {
             "hashes": [
-                "sha256:4103382697418c24702b7731ef2bd73606ca6a86336b1a898e97c34d0d241c69",
-                "sha256:d809ac570f630491778b47ae8d02475162f04eeb0ca39ccd3f4112d729d7eaa7"
+                "sha256:8a9ac0dea40e76f89cdf6de98da7872a5f39aa632d90037cee0685f43609d26d",
+                "sha256:90287722dbec20f32d9e8b56da1d94c8575bb3e1d097e659aedb6e17b825e395"
             ],
-            "version": "==1.12.234"
+            "version": "==1.12.235"
         },
         "certifi": {
             "hashes": [
@@ -97,6 +97,13 @@
             ],
             "version": "==2.3.4"
         },
+        "pylru": {
+            "hashes": [
+                "sha256:492f934bb98dc6c8b2370c02c95c65516ddc08c8f64d27f70087eb038621d297"
+            ],
+            "index": "pypi",
+            "version": "==1.2.0"
+        },
         "python-dateutil": {
             "hashes": [
                 "sha256:7e6584c74aeed623791615e26efd690f29817a27c73085b78e4bad02493df2fb",
@@ -129,11 +136,11 @@
         },
         "urllib3": {
             "hashes": [
-                "sha256:2f3eadfea5d92bc7899e75b5968410b749a054b492d5a6379c1344a1481bc2cb",
-                "sha256:9c6c593cb28f52075016307fc26b0a0f8e82bc7d1ff19aaaa959b91710a56c47"
+                "sha256:3de946ffbed6e6746608990594d08faac602528ac7015ac28d33cee6a45b7398",
+                "sha256:9a107b99a5393caf59c7aa3c1249c16e6879447533d0887f4336dde834c7be86"
             ],
             "markers": "python_version >= '3.4'",
-            "version": "==1.25.5"
+            "version": "==1.25.6"
         }
     },
     "develop": {
@@ -146,10 +153,10 @@
         },
         "astroid": {
             "hashes": [
-                "sha256:6560e1e1749f68c64a4b5dee4e091fce798d2f0d84ebe638cf0e0585a343acf4",
-                "sha256:b65db1bbaac9f9f4d190199bb8680af6f6f84fd3769a5ea883df8a91fe68b4c4"
+                "sha256:9b3f17b0550f82e28a6776a4e5222441f48e523b0773df4bc505bb6b7c2093b7",
+                "sha256:c7e2e5773d87ccc00d01c273e439386f4d6d63cce61317a79ccce5880162f9fb"
             ],
-            "version": "==2.2.5"
+            "version": "==2.3.0"
         },
         "atomicwrites": {
             "hashes": [
@@ -279,11 +286,11 @@
         },
         "pylint": {
             "hashes": [
-                "sha256:5d77031694a5fb97ea95e828c8d10fc770a1df6eb3906067aaed42201a8a6a09",
-                "sha256:723e3db49555abaf9bf79dc474c6b9e2935ad82230b10c1138a71ea41ac0fff1"
+                "sha256:92280a6085fc5e4fec67d6330c0c85eae50817696d02bdc85e9ca6bab830ad58",
+                "sha256:ef796b99c243afeebf7a04b4426126ac837940da6bcd5fc47229c507e056fec1"
             ],
             "index": "pypi",
-            "version": "==2.3.1"
+            "version": "==2.4.0"
         },
         "pyparsing": {
             "hashes": [
@@ -332,7 +339,7 @@
                 "sha256:d896919306dd0aa22d0132f62a1b78d11aaf4c9fc5b3410d3c666b818191630a",
                 "sha256:ffde2fbfad571af120fcbfbbc61c72469e72f550d676c3342492a9dfdefb8f12"
             ],
-            "markers": "implementation_name == 'cpython'",
+            "markers": "implementation_name == 'cpython' and python_version >= '3.7' and python_version < '3.8'",
             "version": "==1.4.0"
         },
         "typing-extensions": {

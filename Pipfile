@@ -15,6 +15,7 @@ elasticsearch = "*"
 aws-requests-auth = "*"
 boto3 = "*"
 flatten-dict = "*"
+pylru = "*"
 
 [requires]
 python_version = "3.7"

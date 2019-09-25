@@ -3,6 +3,7 @@ import traceback
 from typing import Iterable, Callable, Dict, Iterator, Union, TypeVar
 import logging
 
+import pylru  # type: ignore
 import boto3  # type: ignore
 import elasticsearch  # type: ignore
 import elasticsearch.helpers  # type: ignore
@@ -77,13 +78,31 @@ def _es_streaming_wrapper(streamer: Iterator[T]) -> Iterator[T]:
             traceback.print_exc()
 
 
+def buffering_iterator(
+    iterable: Iterable[EsDocument], buffer: pylru.lrucache
+) -> Iterable[EsDocument]:
+    for item in iterable:
+        _id = item.get("_id")
+        if _id:
+            buffer[_id] = item
+        yield item
+
+
 def _stream_to_es(
     es: elasticsearch.Elasticsearch,
     documents: Iterable[EsDocument],
     log_interval: int = 10_000,
 ) -> None:
+    # We buffer items as they are sent through to ES so that we can show them
+    # in case ES returns an error. This requires the _id to be pre-set.
+    buffer = pylru.lrucache(_ES_STREAM_BULK_OPTS["chunk_size"] * 2)
+
+    documents_bufferer = buffering_iterator(documents, buffer)
+
     elastic_stream = _es_streaming_wrapper(
-        elasticsearch.helpers.streaming_bulk(es, documents, **_ES_STREAM_BULK_OPTS)
+        elasticsearch.helpers.streaming_bulk(
+            es, documents_bufferer, **_ES_STREAM_BULK_OPTS
+        )
     )
     count = 0
     for resp in elastic_stream:
@@ -93,7 +112,25 @@ def _stream_to_es(
         if resp[0]:
             count += 1
         else:
-            logger.warning("Error from Elasticsearch, continuing: %r", resp)
+            # The error might not reference a document
+            doc_id = resp[1].get("index", {}).get("_id")
+            if doc_id:
+                if doc_id in buffer:
+                    original_doc = buffer[doc_id]
+                    logger.warning(
+                        "Error from Elasticsearch, continuing: %r (original document: %r)",
+                        resp,
+                        original_doc,
+                    )
+                else:
+                    logger.warning(
+                        "Error from Elasticsearch, continuing: %r (couldn't find doc in buffer of %s items)",
+                        resp,
+                        len(buffer),
+                    )
+            else:
+                logger.warning("Error from Elasticsearch, continuing: %r", resp)
+
     logger.info("Sent %s total documents to Elasticsearch", count)
 
 
