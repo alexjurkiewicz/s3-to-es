@@ -108,9 +108,7 @@ def buffering_iterator(
 
 
 def _stream_to_es(
-    es: elasticsearch.Elasticsearch,
-    documents: Iterable[EsDocument],
-    log_interval: int = 1_000,
+    es: elasticsearch.Elasticsearch, documents: Iterable[EsDocument]
 ) -> None:
     # We buffer items as they are sent through to ES so that we can show them
     # in case ES returns an error. This requires the _id to be pre-set.
@@ -125,11 +123,9 @@ def _stream_to_es(
     )
     # Each document causes an iteration of this loop, even though docs are sent
     # in batches.
+    count = 0  # if enumerate() gets zero items, it won't set this
     # Resp is a tuple: (success: bool, es_response: dict)
     for count, resp in enumerate(elastic_stream):
-        if count % log_interval == 0:
-            logger.debug("Sent %s documents to Elasticsearch", count)
-
         if not resp[0]:
             # The error might not reference a document
             doc_id = resp[1].get("index", {}).get("_id")
