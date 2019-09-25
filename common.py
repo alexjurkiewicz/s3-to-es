@@ -37,8 +37,8 @@ def _s3_object_lines(bucket: str, key: str) -> Iterable[str]:
     if key.endswith(".gz"):
         stream = gzip.GzipFile(fileobj=response["Body"])
     else:
-        stream = response["Body"]
-    for line in stream.iter_lines():
+        stream = response["Body"].iter_lines()
+    for line in stream:
         yield line.decode()
     logger.debug("Finished streaming from S3")
 
