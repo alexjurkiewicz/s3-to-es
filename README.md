@@ -27,6 +27,7 @@ This repository implements the Lambda functions in the above diagram. You have t
 2. `npm install`
 3. Create `serverless-variables.yml`
 4. Deploy the stack: `npx serverless deploy --region us-west-2`
+    1. If you get strange Python dependency errors, run this command from within the Pipenv's virtualenv (eg `pipenv shell`).
 5. Add event triggers for your S3 buckets to trigger the correct Lambda function. The function ARNs are available in SSM Parameter Store under the `/s3-to-es/handlers/` prefix.
 
 ## Development
