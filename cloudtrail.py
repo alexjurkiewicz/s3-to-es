@@ -1,6 +1,7 @@
 from typing import Iterable
 import json
 import re
+import hashlib
 
 import flatten_dict  # type: ignore
 
@@ -47,6 +48,7 @@ def check_filename(filename: str) -> bool:
 
 
 def transform(line: str, _line_no: int) -> Iterable[common.EsDocument]:
+    _id = hashlib.blake2b(line.encode()).hexdigest()
     try:
         data = json.loads(line)
     except:  # pylint: disable=bare-except
@@ -77,4 +79,5 @@ def transform(line: str, _line_no: int) -> Iterable[common.EsDocument]:
         doc["_type"] = "doc"  # Can be removed with ES > 7
         doc["_index"] = "cloudtrail-" + record["eventTime"].split("T")[0]
         doc["event.provider"] = "cloudtrail"
+        doc["_id"] = _id
         yield doc
