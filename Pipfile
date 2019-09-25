@@ -11,7 +11,7 @@ pytest = "*"
 
 [packages]
 requests = "*"
-elasticsearch = "*"
+elasticsearch = "~=6.3"
 aws-requests-auth = "*"
 boto3 = "*"
 flatten-dict = "*"
