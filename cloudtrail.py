@@ -76,4 +76,5 @@ def transform(line: str, _line_no: int) -> Iterable[common.EsDocument]:
 
         doc["_type"] = "doc"  # Can be removed with ES > 7
         doc["_index"] = "cloudtrail-" + record["eventTime"].split("T")[0]
+        doc["event.provider"] = "cloudtrail"
         yield doc
