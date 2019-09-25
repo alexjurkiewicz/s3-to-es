@@ -16,6 +16,8 @@ var/
 .installed.cfg
 *.egg
 .mypy_cache/
+.coverage
+htmlcov/
 
 # Serverless directories
 .serverless

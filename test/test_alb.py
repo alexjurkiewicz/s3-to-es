@@ -12,8 +12,13 @@ EXAMPLE_HTTP_ITEMS = {
     "url.full": "http://www.example.com:80/",  # test splitting request field
 }
 
+def test_filenames():
+    assert not alb.check_filename("foo")
+    assert alb.check_filename("AWSLogs/0123/elasticloadbalancing/region/yyyy/mm/dd/0123_elasticloadbalancing_region_load-balancer-id_end-time_ip-address_random-string.log.gz")
+    assert alb.check_filename("prefix/AWSLogs/0123/elasticloadbalancing/region/yyyy/mm/dd/0123_elasticloadbalancing_region_load-balancer-id_end-time_ip-address_random-string.log.gz")
+    assert not alb.check_filename("AWSLogs/123456789012/ELBAccessLogTestFile")
 
-def test_basic():
+def test_transform():
     response = list(alb.transform(EXAMPLE_HTTP, 0))
     assert len(response) == 1
     doc = response[0]
@@ -29,3 +34,7 @@ def test_basic():
         assert key.islower()
         # Limited punctuation is allowed
         assert re.sub("[._@-]", "", key).isalnum()
+
+def test_enable_line():
+    response = list(alb.transform("Enable AccessLog for ELB: elb/123", 0))
+    assert len(response) == 0

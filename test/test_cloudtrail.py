@@ -1,4 +1,5 @@
 import re
+import json
 
 import cloudtrail
 
@@ -52,21 +53,71 @@ EXPECTED = {
     "event.module": "cloudtrail.amazonaws.com",
     "event.action": "StartLogging",
     "cloud.account.region": "us-east-2",
-    "aws.cloudtrail.source_i_p_address": "203.0.113.64",
+    "aws.cloudtrail.source_ip_address": "203.0.113.64",
     "aws.cloudtrail.user_agent": "signin.amazonaws.com",
     "aws.cloudtrail.request_parameters.name": "arn:aws:cloudtrail:us-east-2:123456789012:trail/My-First-Trail",
-    "aws.cloudtrail.response_elements": None,
     "aws.cloudtrail.request_id": "ddf5140f-EXAMPLE",
     "event.id": "7116c6a1-EXAMPLE",
     "aws.cloudtrail.read_only": False,
     "event.dataset": "AwsApiCall",
+    "event.provider": "cloudtrail",
     "aws.cloudtrail.recipient_account_id": "123456789012",
     "_type": "doc",
     "_index": "cloudtrail-2019-06-19",
 }
 
+def test_key_convert():
+    assert cloudtrail.convert_cloudtrail_key('awsRegion') == "aws_region"
+    assert cloudtrail.convert_cloudtrail_key('source.awsRegion') == "source.aws_region"
 
-def test_basic():
+
+def test_transform():
     response = list(cloudtrail.transform(EXAMPLE, 0))
     assert len(response) == 1
     assert response[0] == EXPECTED
+
+
+def test_transform_fail():
+    response = list(cloudtrail.transform("asd", 0))
+    assert len(response) == 0
+
+
+def test_transform_stringify():
+    obj = {"Records": [
+        {"eventTime": "2019-09-09T00:00:01Z", "responseElements": {"version": 3}}
+    ]}
+    response = list(cloudtrail.transform(json.dumps(obj), 0))
+    assert len(response) == 1
+    print(response[0])
+    assert response[0]["aws.cloudtrail.response_elements.version"] == "3"
+
+
+def test_s3_key_names():
+    assert not cloudtrail.check_filename("foo")
+    # Normal
+    assert cloudtrail.check_filename(
+        "AWSLogs/0123/CloudTrail/region/2019/09/09/123456789012_CloudTrail_us-west-1_20140620T1255ZHdkvFTXOA3Vnhbc.json.gz"
+    )
+    assert cloudtrail.check_filename(
+        "prefix/AWSLogs/0123/CloudTrail/region/2019/09/09/123456789012_CloudTrail_us-west-1_20140620T1255ZHdkvFTXOA3Vnhbc.json.gz"
+    )
+    # AWS Org
+    assert cloudtrail.check_filename(
+        "AWSLogs/0123/0123/CloudTrail/region/2019/09/09/123456789012_CloudTrail_us-west-1_20140620T1255ZHdkvFTXOA3Vnhbc.json.gz"
+    )
+    assert cloudtrail.check_filename(
+        "prefix/AWSLogs/0123/0123/CloudTrail/region/2019/09/09/123456789012_CloudTrail_us-west-1_20140620T1255ZHdkvFTXOA3Vnhbc.json.gz"
+    )
+    # Digest files
+    assert not cloudtrail.check_filename(
+        "AWSLogs/0123/CloudTrail-Digest/region/digest-end-year/digest-end-month/digest-end-date/aws-account-id_CloudTrail-Digest_region_trail-name_region_digest_end_timestamp.json.gz"
+    )
+    assert not cloudtrail.check_filename(
+        "prefix/AWSLogs/0123/CloudTrail-Digest/region/digest-end-year/digest-end-month/digest-end-date/aws-account-id_CloudTrail-Digest_region_trail-name_region_digest_end_timestamp.json.gz"
+    )
+    assert not cloudtrail.check_filename(
+        "AWSLogs/0123/0123/CloudTrail-Digest/region/digest-end-year/digest-end-month/digest-end-date/aws-account-id_CloudTrail-Digest_region_trail-name_region_digest_end_timestamp.json.gz"
+    )
+    assert not cloudtrail.check_filename(
+        "prefix/AWSLogs/0123/0123/CloudTrail-Digest/region/digest-end-year/digest-end-month/digest-end-date/aws-account-id_CloudTrail-Digest_region_trail-name_region_digest_end_timestamp.json.gz"
+    )

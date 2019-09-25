@@ -8,6 +8,9 @@ black = "*"
 pylint = "*"
 mypy = "*"
 pytest = "*"
+moto = "*"
+coverage = "*"
+pytest-cov = "*"
 
 [packages]
 requests = "*"
