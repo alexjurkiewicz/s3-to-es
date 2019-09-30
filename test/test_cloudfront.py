@@ -11,7 +11,13 @@ EXPECTED_ITEMS = {
 }
 
 
-def test_basic():
+def test_filenames() -> None:
+    assert not cloudfront.check_filename("foo")
+    assert cloudfront.check_filename("DIST012346.2019-09-30-01.abcdef.gz")
+    assert cloudfront.check_filename("prefix/DIST012346.2019-09-30-01.abcdef.gz")
+
+
+def test_basic() -> None:
     docs = 0
     for line_no, line in enumerate(EXAMPLE.splitlines()):
         docs += 1
@@ -26,7 +32,7 @@ def test_basic():
         assert "@timestamp" in doc
         if line_no == 2:
             # Check the value of a few keys
-            for key in EXPECTED_ITEMS.keys():
+            for key in EXPECTED_ITEMS:
                 assert doc[key] == EXPECTED_ITEMS[key]
             # Check key names are all correct
             for key, value in doc.items():

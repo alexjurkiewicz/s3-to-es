@@ -1,4 +1,4 @@
-from typing import Iterable
+from typing import Iterable, Optional
 import json
 import re
 
@@ -20,7 +20,7 @@ PREDEFINED_MAPPINGS = {
 STRING_FIELDS = set(["aws.cloudtrail.response_elements.version"])
 
 
-def elasticsearch_reducer(k1: str, k2: str) -> str:
+def elasticsearch_reducer(k1: Optional[str], k2: str) -> str:
     """Combine items with '.' as per Elastic Common Schema convention."""
     if k1 is None:  # pylint: disable=no-else-return
         return str(k2)

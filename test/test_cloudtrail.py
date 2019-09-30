@@ -1,4 +1,3 @@
-import re
 import json
 
 import cloudtrail
@@ -66,33 +65,36 @@ EXPECTED = {
     "_index": "cloudtrail-2019-06-19",
 }
 
-def test_key_convert():
-    assert cloudtrail.convert_cloudtrail_key('awsRegion') == "aws_region"
-    assert cloudtrail.convert_cloudtrail_key('source.awsRegion') == "source.aws_region"
+
+def test_key_convert() -> None:
+    assert cloudtrail.convert_cloudtrail_key("awsRegion") == "aws_region"
+    assert cloudtrail.convert_cloudtrail_key("source.awsRegion") == "source.aws_region"
 
 
-def test_transform():
+def test_transform() -> None:
     response = list(cloudtrail.transform(EXAMPLE, 0))
     assert len(response) == 1
     assert response[0] == EXPECTED
 
 
-def test_transform_fail():
+def test_transform_fail() -> None:
     response = list(cloudtrail.transform("asd", 0))
     assert len(response) == 0
 
 
-def test_transform_stringify():
-    obj = {"Records": [
-        {"eventTime": "2019-09-09T00:00:01Z", "responseElements": {"version": 3}}
-    ]}
+def test_transform_stringify() -> None:
+    obj = {
+        "Records": [
+            {"eventTime": "2019-09-09T00:00:01Z", "responseElements": {"version": 3}}
+        ]
+    }
     response = list(cloudtrail.transform(json.dumps(obj), 0))
     assert len(response) == 1
     print(response[0])
     assert response[0]["aws.cloudtrail.response_elements.version"] == "3"
 
 
-def test_s3_key_names():
+def test_s3_key_names() -> None:
     assert not cloudtrail.check_filename("foo")
     # Normal
     assert cloudtrail.check_filename(

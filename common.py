@@ -22,7 +22,7 @@ _ES_STREAM_BULK_OPTS = {
     "raise_on_exception": False,  # Don't re-raise exceptions if the call to es.bulk fails, just return error response
 }
 
-EsDocument = Dict[str, Union[str, int, bool, float]]
+EsDocument = Dict[str, Union[str, bool, float]]
 TransformFn = Callable[[str, int], Iterable[EsDocument]]
 T = TypeVar("T")  # generic type
 
@@ -31,7 +31,8 @@ logger = logging.getLogger()
 
 def _s3_object_lines(bucket: str, key: str) -> Iterable[str]:
     """Return lines from an S3 object in a streaming manner."""
-    obj = boto3.resource("s3").Object(bucket_name=bucket, key=key)
+    s3 = boto3.resource("s3")
+    obj = s3.Object(bucket_name=bucket, key=key)  # pylint: disable=no-member
     response = obj.get()
     logger.debug("Streaming %s bytes from S3", response["ContentLength"])
     if key.endswith(".gz"):
@@ -39,7 +40,7 @@ def _s3_object_lines(bucket: str, key: str) -> Iterable[str]:
     else:
         stream = response["Body"].iter_lines()
     for line in stream:
-        yield line.decode()
+        yield line.decode().strip()
     logger.debug("Finished streaming from S3")
 
 
