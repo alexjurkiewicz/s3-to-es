@@ -1,5 +1,6 @@
 import re
 from typing import Iterable
+import urllib.parse
 
 import common
 
@@ -7,6 +8,16 @@ import common
 def check_filename(filename: str) -> bool:
     return bool(
         re.match(r".*[A-Z0-9]+\.\d{4}-\d{2}-\d{2}-\d{2}\.[0-9a-f]+\.gz$", filename)
+    )
+
+
+def decode(s: str) -> str:
+    """URL decoding from RFC 1738 with a twist!
+
+    Cloudfront double-encodes a couple of characters, so handle them specially.
+    """
+    return urllib.parse.unquote(
+        s.replace("%2522", '"').replace("%255C", "\\").replace("%2520", " ")
     )
 
 
@@ -30,7 +41,7 @@ def transform(line: str, line_no: int) -> Iterable[common.EsDocument]:
         "url.path": data[7],
         "http.response.status_code": int(data[8]),
         "http.request.referrer": data[9],
-        "user_agent.original": data[10],
+        "user_agent.original": decode(data[10]),
         "url.query": data[11],
         # "url.cookie": data[12], # disabled
         "aws.cloudfront.result_type_edge": data[13],
