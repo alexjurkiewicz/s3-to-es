@@ -14,7 +14,7 @@ def transform(line: str, line_no: int) -> Iterable[common.EsDocument]:
     if line_no in (0, 1):
         return []
     data = line.strip().split("\t")
-    yield {
+    doc: common.EsDocument = {
         # Required by Elasticsearch
         "_index": "cloudfront-%s" % data[0],
         "_type": "doc",  # Remove for ES > 7
@@ -47,3 +47,4 @@ def transform(line: str, line_no: int) -> Iterable[common.EsDocument]:
         "aws.cloudfront.fle_status": data[24],
         "aws.cloudfront.fle_fields": data[25],
     }
+    yield {k: v for k, v in doc.items() if v != "-"}
