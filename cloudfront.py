@@ -58,4 +58,6 @@ def transform(line: str, line_no: int) -> Iterable[common.EsDocument]:
         "aws.cloudfront.fle_status": data[24],
         "aws.cloudfront.fle_fields": data[25],
     }
+    if len(data) > 26:
+        doc["aws.cloudfront.unhandled_fields"] = repr(data[26:])
     yield {k: v for k, v in doc.items() if v != "-"}
