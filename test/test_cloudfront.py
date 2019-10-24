@@ -40,4 +40,5 @@ def test_basic() -> None:
                 assert key.islower()
                 # Limited punctuation is allowed
                 assert re.sub("[._@-]", "", key).isalnum()
+                assert value != "-"
     assert docs == 4  # 4 items in EXAMPLE
