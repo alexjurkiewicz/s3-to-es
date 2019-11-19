@@ -58,6 +58,15 @@ def transform(line: str, line_no: int) -> Iterable[common.EsDocument]:
         "aws.cloudfront.fle_status": data[24],
         "aws.cloudfront.fle_fields": data[25],
     }
+    # New fields added 2019-12-12
     if len(data) > 26:
+        doc["client.port"] = data[26]
+        doc["aws.cloudfront.time_to_first_byte"] = data[27]
+        doc["aws.cloudfront.result_type_detailed"] = data[28]
+        doc["http.response.content-type"] = data[29]
+        doc["http.response.content-length"] = data[30]
+        doc["http.response.content-range.start"] = data[31]
+        doc["http.response.content-range.end"] = data[32]
+    if len(data) > 33:
         doc["aws.cloudfront.unhandled_fields"] = repr(data[26:])
     yield {k: v for k, v in doc.items() if v != "-"}
