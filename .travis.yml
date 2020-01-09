@@ -1,9 +1,0 @@
-language: python
-python:
-  - "3.7"
-install:
-  - pipenv install --dev
-script:
-  - pipenv run mypy . test
-  - pipenv run pylint *.py test/*.py
-  - pipenv run python -m pytest --cov=. --cov-report term-missing -r f --disable-warnings test/

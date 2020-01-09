@@ -48,7 +48,7 @@ def transform(line: str, line_no: int) -> Iterable[common.EsDocument]:
         "aws.cloudfront.request_id": data[14],
         "http.request.host": data[15],
         "http.protocol": data[16],
-        "http.request.total.bytes": int(data[17]) if data[17] != "-" else 0,
+        "http.request.total.bytes": int(data[17]) if data[17] != "-" else "-",
         "event.duration": float(data[18]) * 1_000_000_000,  # s to ns
         "http.request.x-forwarded-for": data[19],
         "http.ssl.protocol": data[20],
@@ -60,13 +60,15 @@ def transform(line: str, line_no: int) -> Iterable[common.EsDocument]:
     }
     # New fields added 2019-12-12
     if len(data) > 26:
-        doc["client.port"] = data[26]
-        doc["aws.cloudfront.time_to_first_byte"] = data[27]
+        doc["client.port"] = int(data[26])
+        doc["aws.cloudfront.time_to_first_byte"] = float(data[27])
         doc["aws.cloudfront.result_type_detailed"] = data[28]
         doc["http.response.content-type"] = data[29]
-        doc["http.response.content-length"] = data[30]
-        doc["http.response.content-range.start"] = data[31]
-        doc["http.response.content-range.end"] = data[32]
+        doc["http.response.content-length"] = int(data[30])
+        doc["http.response.content-range.start"] = int(data[31]) if data[31] != "-" else "-"
+        doc["http.response.content-range.end"] = int(data[32]) if data[32] != "-" else "-"
     if len(data) > 33:
-        doc["aws.cloudfront.unhandled_fields"] = repr(data[26:])
+        doc["aws.cloudfront.unhandled_fields"] = repr(data[33:])
+
+    # Strip all fields with "-"
     yield {k: v for k, v in doc.items() if v != "-"}
