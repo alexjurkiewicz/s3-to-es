@@ -22,4 +22,4 @@ jobs:
     - name: pylint
       run: pipenv run pylint *.py test/*.py
     - name: pytest
-      run: python -m pytest --cov=. --cov-report term-missing -r f --disable-warnings test/
+      run: pipenv run python -m pytest --cov=. --cov-report term-missing -r f --disable-warnings test/
