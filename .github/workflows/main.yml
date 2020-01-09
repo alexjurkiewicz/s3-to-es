@@ -15,6 +15,13 @@ jobs:
         python-version: 3.8
     - name: Install Pipenv
       run: pip3 install pipenv && python3 --version && pip3 --version && pipenv --version
+    - name: Cache Pipenv virtualenv
+      uses: actions/cache@v1.1.0
+      with:
+        # A directory to store and save the cache
+        path: $HOME/.local/share/virtualenvs/
+        # An explicit key for restoring and saving the cache
+        key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile.lock') }}
     - name: Install dependencies
       run: pipenv install --dev
     - name: mypy
