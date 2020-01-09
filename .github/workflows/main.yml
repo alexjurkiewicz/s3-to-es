@@ -10,7 +10,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Install Pipenv
-      run: apt install pipenv && python3 --version && pip3 --version && pipenv --version
+      run: apt-get update && apt-get install pipenv && python3 --version && pip3 --version && pipenv --version
     - name: mypy
       run: pipenv run mypy . test
     - name: pylint
