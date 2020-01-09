@@ -10,10 +10,18 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Install Pipenv
-      run: sudo apt-get update && sudo apt-get install pipenv && python3 --version && pip3 --version && pipenv --version
+      run: pip3 install pipenv && hash -r && python3 --version && pip3 --version && pipenv --version
+      env:
+        PATH: export "${HOME}/.local/bin:$PATH"
     - name: mypy
       run: pipenv run mypy . test
+      env:
+        PATH: export "${HOME}/.local/bin:$PATH"
     - name: pylint
       run: pipenv run pylint *.py test/*.py
+      env:
+        PATH: export "${HOME}/.local/bin:$PATH"
     - name: pytest
       run: python -m pytest --cov=. --cov-report term-missing -r f --disable-warnings test/
+      env:
+        PATH: export "${HOME}/.local/bin:$PATH"
