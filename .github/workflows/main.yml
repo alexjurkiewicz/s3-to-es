@@ -16,7 +16,7 @@ jobs:
     - name: Install Pipenv
       run: pip3 install pipenv && python3 --version && pip3 --version && pipenv --version
     - name: Install dependencies
-      run: pipenv install
+      run: pipenv install --dev
     - name: mypy
       run: pipenv run mypy . test
     - name: pylint
